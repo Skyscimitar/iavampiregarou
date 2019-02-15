@@ -43,7 +43,7 @@ def understand_hme_command(sock):
     return x,y
 
 
-def understand_hme_command(sock):
+def understand_upd_command(sock):
     nb_changes = getresult(sock)
 
     coordinates = []
@@ -94,11 +94,11 @@ if __name__ == '__main__':
         elif cmd == u"HUM":
             print("HUM command:", understand_hum_command(sock))
         elif cmd == u"HME":
-            print("HME command:", understand_hum_command(sock))
+            print("HME command:", understand_hme_command(sock))
         elif cmd == u"MAP":
-            print("MAP command:", understand_hum_command(sock))
+            print("MAP command:", understand_upd_command(sock))
         elif cmd == u"UPD":
-            print("SET command:", understand_hum_command(sock))
+            print("UPD command:", understand_upd_command(sock))
         elif cmd == u"END":
             break
         elif cmd == u"BYE":

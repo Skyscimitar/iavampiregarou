@@ -72,19 +72,13 @@ def send_mov_command(sock, movements):
     print(movements)
 
     for movement in movements:
-        print(movement)
-        print(movement[0])
+        #print(movement)
         paquet += bytes([movement[0]])
         paquet += bytes([movement[1]])
         paquet += bytes([movement[2]])
         paquet += bytes([movement[3]])
         paquet += bytes([movement[4]])
-        print(paquet)
-        #paquet += struct.pack("d", movement[0])
-        #paquet += struct.pack("d", movement[1])
-        #paquet += struct.pack("d", movement[2])
-        #paquet += struct.pack("d", movement[3])
-        #paquet += struct.pack("d", movement[4])
+
 
     sock.send(paquet)
 
@@ -96,30 +90,26 @@ if __name__ == '__main__':
     print('Connecté')
     send_nme_command(sock, 'helene')
 
-    while True:
 
-        while True :
-            cmd = getcommand(sock)
-            #print('commande reçue :' + cmd )
-            if cmd == u"SET":
-                print ("SET command:", understand_set_command(sock))
-            elif cmd == u"HUM":
-                print("HUM command:", understand_hum_command(sock))
-            elif cmd == u"HME":
-                print("HME command:", understand_hme_command(sock))
-            elif cmd == u"MAP":
-                print("MAP command:", understand_upd_command(sock))
-            elif cmd == u"UPD":
-                print("UPD command:", understand_upd_command(sock))
-                break
-            elif cmd == u"END":
-                break
-            elif cmd == u"BYE":
-                sleep(1)
-                continue
-            else:
-                raise ValueError("Erreur protocole")
 
-        send_mov_command(sock,[(4,3,4,4,4)])
-
-        sleep(1)
+    while True :
+        cmd = getcommand(sock)
+        #print('commande reçue :' + cmd )
+        if cmd == u"SET":
+            print ("SET command:", understand_set_command(sock))
+        elif cmd == u"HUM":
+            print("HUM command:", understand_hum_command(sock))
+        elif cmd == u"HME":
+            print("HME command:", understand_hme_command(sock))
+        elif cmd == u"MAP":
+            print("MAP command:", understand_upd_command(sock))
+        elif cmd == u"UPD":
+            print("UPD command:", understand_upd_command(sock))
+            send_mov_command(sock, [(4, 3, 4, 4, 4)])
+        elif cmd == u"END":
+            break
+        elif cmd == u"BYE":
+            sleep(1)
+            continue
+        else:
+            raise ValueError("Erreur protocole")

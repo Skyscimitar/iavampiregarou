@@ -4,11 +4,19 @@ class GameState:
 
 
     def __init__(self, n, m):
-        self.map = np.zeros((n,m))
+        self.map = np.zeros((n,m,2))
 
 
-    def set_species_on_cell(self, x, y, species, number):
-        self.map[x][y] = (species, number)
+    def set_cell (self, tuple) :
+        x, y, humans, vampires, werewolves =tuple
+        if werewolves != 0 :
+            self.map[y][x] = (2, werewolves)
+        elif vampires != 0 :
+            self.map[y][x] = (1, vampires)
+        else :
+            self.map[y][x] = (0, humans)
+
+
 
 
     """

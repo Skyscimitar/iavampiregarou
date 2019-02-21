@@ -1,6 +1,6 @@
 import socket
 from time import sleep
-import struct
+from game_state.GameState import *
 
 
 def getcommand(sock):
@@ -60,7 +60,7 @@ def understand_upd_command(sock):
 def send_nme_command(sock, name):
     paquet = bytes()
     paquet += 'NME'.encode()
-    paquet += struct.pack("d", len(name))
+    paquet += bytes([len(name)])
     paquet += name.encode()
     sock.send(paquet)
 
@@ -69,10 +69,9 @@ def send_mov_command(sock, movements):
     paquet = bytes()
     paquet += 'MOV'.encode()
     paquet += bytes([len(movements)])
-    print(movements)
+    #print(movements)
 
     for movement in movements:
-        #print(movement)
         paquet += bytes([movement[0]])
         paquet += bytes([movement[1]])
         paquet += bytes([movement[2]])
@@ -92,20 +91,26 @@ if __name__ == '__main__':
 
 
 
+
     while True :
         cmd = getcommand(sock)
         #print('commande reçue :' + cmd )
         if cmd == u"SET":
-            print ("SET command:", understand_set_command(sock))
+            n,m = understand_set_command(sock)
+            game = GameState(n,m)
         elif cmd == u"HUM":
             print("HUM command:", understand_hum_command(sock))
         elif cmd == u"HME":
             print("HME command:", understand_hme_command(sock))
         elif cmd == u"MAP":
-            print("MAP command:", understand_upd_command(sock))
+            map = understand_upd_command(sock)
+            for case in map :
+                game.set_cell(case)
         elif cmd == u"UPD":
-            print("UPD command:", understand_upd_command(sock))
-            send_mov_command(sock, [(4, 3, 4, 4, 4)])
+            upd = understand_upd_command(sock)
+            for change in upd :
+                game.set_cell(change)
+            #print(game.map)
         elif cmd == u"END":
             break
         elif cmd == u"BYE":

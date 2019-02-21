@@ -1,7 +1,7 @@
 import socket
 from time import sleep
 import struct
-
+from .artificial_intelligence.decider import next_moves_decider
 
 def getcommand(sock):
     commande = bytes()
@@ -105,7 +105,8 @@ if __name__ == '__main__':
             print("MAP command:", understand_upd_command(sock))
         elif cmd == u"UPD":
             print("UPD command:", understand_upd_command(sock))
-            send_mov_command(sock, [(4, 3, 4, 4, 4)])
+            moves = next_moves_decider()
+            send_mov_command(sock, moves)
         elif cmd == u"END":
             break
         elif cmd == u"BYE":

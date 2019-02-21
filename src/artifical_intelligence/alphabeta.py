@@ -14,5 +14,5 @@ input: game_state: GameState, depth: int, scoring_function: (game_state: GameSta
 output: [(xi:int, yi:int, nb_individus:int, xo:int, yo:int)]
 """
 def alphabeta(game_state, depth, scoring_function):
-
+    return True
 

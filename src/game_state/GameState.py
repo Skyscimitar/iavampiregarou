@@ -4,12 +4,17 @@ class GameState:
 
 
     def __init__(self, n, m):
-        self.map = np.zeros((n,m))
+        self.n = n
+        self.m = m
+        self.map = [[None for _ in range(m)] for _ in range(n)]
 
 
     def set_species_on_cell(self, x, y, species, number):
         self.map[x][y] = (species, number)
 
+
+    def get_map_shape(self):
+        return (self.n, self.m)
 
     """
     Returns the species and number of inhabitants of a given cell
@@ -25,7 +30,7 @@ class GameState:
     input: species: string
     ouptut: bool
     """
-    def check_game_over(species):
+    def check_game_over(self, species):
         game_over = True
         for i in self.map.shape[0]:
             for j in self.map.shape[1]:

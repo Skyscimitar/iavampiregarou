@@ -11,14 +11,25 @@ class GameState:
         self.humans = []
         self.werewolves = []
         self.vampires = []
-        self.map = np.zeros((n,m))
         self.vampire_count = 0
         self.werewolf_count = 0
         self.human_count = 0
 
+    def convert_tuple (self, tuple) :
+        x, y, humans, vampires, werewolves = tuple
+        if humans != 0 :
+            self.set_species_on_cell(x,y, HUMAN, humans)
+        elif vampires != 0 :
+            self.set_species_on_cell(x,y, VAMPIRE, vampires)
+        elif werewolves != 0:
+            self.set_species_on_cell(x,y, WEREWOLF, werewolves)
+        else :
+            self.map[y][x] = None
+
 
     def set_species_on_cell(self, x, y, species, number):
-        self.map[x][y] = (species, number)
+        #Les coordonnées de la map sont en mode [ordonnées] [abscisses]
+        self.map[y][x] = (species, number)
         entity = Entity(x,y,number)
         if species == HUMAN:
             self.humans.append(entity)

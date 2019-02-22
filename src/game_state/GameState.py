@@ -1,23 +1,38 @@
 import numpy as np
+from .constants import HUMAN, WEREWOLF, VAMPIRE
 
 class GameState:
 
 
     def __init__(self, n, m):
-        self.map = np.zeros((n,m,2))
+        self.n = n
+        self.m = m
+        self.map = [[None for _ in range(m)] for _ in range(n)]
+        self.humans = []
+        self.werewolves = []
+        self.vampires = []
+        self.map = np.zeros((n,m))
+        self.vampire_count = 0
+        self.werewolf_count = 0
+        self.human_count = 0
 
 
-    def set_cell (self, tuple) :
-        x, y, humans, vampires, werewolves =tuple
-        if werewolves != 0 :
-            self.map[y][x] = (2, werewolves)
-        elif vampires != 0 :
-            self.map[y][x] = (1, vampires)
-        else :
-            self.map[y][x] = (0, humans)
+    def set_species_on_cell(self, x, y, species, number):
+        self.map[x][y] = (species, number)
+        entity = Entity(x,y,number)
+        if species == HUMAN:
+            self.humans.append(entity)
+            self.human_count += entity.number
+        elif species == VAMPIRE:
+            self.vampires.append(entity)
+            self.vampire_count += entity.number
+        else:
+            self.werewolves.append(entity)
+            self.werewolf_count += entity.number
 
 
-
+    def get_map_shape(self):
+        return (self.n, self.m)
 
     """
     Returns the species and number of inhabitants of a given cell
@@ -33,7 +48,7 @@ class GameState:
     input: species: string
     ouptut: bool
     """
-    def check_game_over(species):
+    def check_game_over(self, species):
         game_over = True
         for i in self.map.shape[0]:
             for j in self.map.shape[1]:
@@ -42,3 +57,17 @@ class GameState:
                     break
         return game_over
         
+
+class Entity:
+
+    def __init__(self, x, y, number):
+        self.number = number
+        self.x = x
+        self.y = y
+
+
+class MapEntity:
+
+    def __init__(self, number, species):
+        self.number = number
+        self.species = species

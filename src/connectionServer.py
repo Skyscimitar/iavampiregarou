@@ -1,7 +1,9 @@
 import socket
 from time import sleep
-from game_state.GameState import *
+from src.game_state import *
 
+import struct
+from src.artifical_intelligence import next_moves_decider
 
 def getcommand(sock):
     commande = bytes()
@@ -110,7 +112,8 @@ if __name__ == '__main__':
             upd = understand_upd_command(sock)
             for change in upd :
                 game.set_cell(change)
-            #print(game.map)
+            moves = next_moves_decider()
+            send_mov_command(sock, moves)
         elif cmd == u"END":
             break
         elif cmd == u"BYE":

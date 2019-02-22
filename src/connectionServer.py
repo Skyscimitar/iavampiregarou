@@ -1,7 +1,8 @@
 import socket
 from time import sleep
-import struct
-from .artificial_intelligence.decider import next_moves_decider
+from game_state.GameState import *
+
+from artifical_intelligence.decider import *
 
 def getcommand(sock):
     commande = bytes()
@@ -60,7 +61,7 @@ def understand_upd_command(sock):
 def send_nme_command(sock, name):
     paquet = bytes()
     paquet += 'NME'.encode()
-    paquet += struct.pack("d", len(name))
+    paquet += bytes([len(name)])
     paquet += name.encode()
     sock.send(paquet)
 
@@ -69,10 +70,9 @@ def send_mov_command(sock, movements):
     paquet = bytes()
     paquet += 'MOV'.encode()
     paquet += bytes([len(movements)])
-    print(movements)
+    #print(movements)
 
     for movement in movements:
-        #print(movement)
         paquet += bytes([movement[0]])
         paquet += bytes([movement[1]])
         paquet += bytes([movement[2]])
@@ -92,20 +92,27 @@ if __name__ == '__main__':
 
 
 
+
     while True :
         cmd = getcommand(sock)
         #print('commande reçue :' + cmd )
         if cmd == u"SET":
-            print ("SET command:", understand_set_command(sock))
+            n,m = understand_set_command(sock)
+            game = GameState(n,m)
         elif cmd == u"HUM":
             print("HUM command:", understand_hum_command(sock))
         elif cmd == u"HME":
             print("HME command:", understand_hme_command(sock))
         elif cmd == u"MAP":
-            print("MAP command:", understand_upd_command(sock))
+            map = understand_upd_command(sock)
+            for case in map :
+                game.convert_tuple(case)
         elif cmd == u"UPD":
-            print("UPD command:", understand_upd_command(sock))
-            moves = next_moves_decider()
+            upd = understand_upd_command(sock)
+            for change in upd :
+                game.convert_tuple(change)
+            print(game.map, game.humans, game.human_count)
+            moves = next_moves_decider(game)
             send_mov_command(sock, moves)
         elif cmd == u"END":
             break

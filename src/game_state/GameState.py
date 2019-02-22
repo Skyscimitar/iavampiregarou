@@ -7,10 +7,27 @@ class GameState:
         self.n = n
         self.m = m
         self.map = [[None for _ in range(m)] for _ in range(n)]
+        self.humans = []
+        self.werewolves = []
+        self.vampires = []
+        self.map = np.zeros((n,m))
+        self.vampire_count = 0
+        self.werewolf_count = 0
+        self.human_count = 0
 
 
     def set_species_on_cell(self, x, y, species, number):
         self.map[x][y] = (species, number)
+        entity = Entity(x,y,number)
+        if species == "human":
+            self.humans.append(entity)
+            self.human_count += entity.number
+        elif species == "vampire":
+            self.vampires.append(entity)
+            self.vampire_count += entity.number
+        else:
+            self.werewolves.append(entity)
+            self.werewolf_count += entity.number
 
 
     def get_map_shape(self):
@@ -39,3 +56,17 @@ class GameState:
                     break
         return game_over
         
+
+class Entity:
+
+    def __init__(self, x, y, number):
+        self.number = number
+        self.x = x
+        self.y = y
+
+
+class MapEntity:
+
+    def __init__(self, number, species):
+        self.number = number
+        self.species = species

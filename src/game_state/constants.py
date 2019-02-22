@@ -1,0 +1,3 @@
+HUMAN = 0
+VAMPIRE = 1
+WEREWOLF = 2

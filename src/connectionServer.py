@@ -1,6 +1,7 @@
 import socket
 from time import sleep
 from game_state.GameState import *
+import sys
 
 from artifical_intelligence.decider import *
 
@@ -70,27 +71,24 @@ def send_mov_command(sock, movements):
     paquet = bytes()
     paquet += 'MOV'.encode()
     paquet += bytes([len(movements)])
-    #print(movements)
-
     for movement in movements:
         paquet += bytes([movement[0]])
         paquet += bytes([movement[1]])
         paquet += bytes([movement[2]])
         paquet += bytes([movement[3]])
         paquet += bytes([movement[4]])
-
-
     sock.send(paquet)
 
 
-if __name__ == '__main__':
+def play():
+    if len(sys.argv) < 2 :
+        print('Il manque des arguments')
+        return
     # connexion au server
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(("localhost", 5555))
+    sock.connect((sys.argv[1], int(sys.argv[2])))
     print('Connecté')
     send_nme_command(sock, 'helene')
-
-
 
 
     while True :
@@ -100,18 +98,22 @@ if __name__ == '__main__':
             n,m = understand_set_command(sock)
             game = GameState(n,m)
         elif cmd == u"HUM":
-            print("HUM command:", understand_hum_command(sock))
+            hum = understand_hum_command(sock)
         elif cmd == u"HME":
-            print("HME command:", understand_hme_command(sock))
+            hme = understand_hme_command(sock)
         elif cmd == u"MAP":
             map = understand_upd_command(sock)
+            print(map)
             for case in map :
                 game.convert_tuple(case)
+                if case[0] == hme[0] and  case[1] == hme[1] :
+                    if case[3] == 0 :
+                        game.species = WEREWOLF
         elif cmd == u"UPD":
             upd = understand_upd_command(sock)
             for change in upd :
                 game.convert_tuple(change)
-            print(game.map, game.humans, game.human_count)
+            #print(game.map, game.humans, game.species)
             moves = next_moves_decider(game)
             send_mov_command(sock, moves)
         elif cmd == u"END":
@@ -121,3 +123,8 @@ if __name__ == '__main__':
             continue
         else:
             raise ValueError("Erreur protocole")
+
+
+if __name__ == '__main__':
+    play()
+

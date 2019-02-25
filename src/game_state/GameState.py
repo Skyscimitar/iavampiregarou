@@ -5,6 +5,7 @@ class GameState:
 
 
     def __init__(self, n, m):
+        self.species = VAMPIRE
         self.n = n
         self.m = m
         self.map = [[None for _ in range(m)] for _ in range(n)]

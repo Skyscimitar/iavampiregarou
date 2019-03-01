@@ -54,7 +54,7 @@ def scoring_function_2(gameState, alpha):
         users = werewolves
         ennemies = vampires
     
-    h_score = nearest_human_camp(human, users, ennemies)
+    h_score = nearest_human_camp(humans, users, ennemies)
 
     if user_species == VAMPIRE:
         return gameState.vampire_count - gameState.werewolf_count + alpha*h_score
@@ -62,7 +62,7 @@ def scoring_function_2(gameState, alpha):
         return gameState.werewolf_count - gameState.vampire_count + alpha*h_score
 
 
-def nearest_human_camp(human, users, ennemies):
+def nearest_human_camp(humans, users, ennemies):
     h_score = 0
     for human in humans:
         min_distance_possible_user = 1000

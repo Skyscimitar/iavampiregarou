@@ -17,9 +17,11 @@ def stupidNext(gameState):
         # and len(vampires) > 0
         user = vampires[0]
         ennemies = werewolves
+        ENNEMY = WEREWOLF
     elif len(werewolves) > 0:
         user = werewolves[0]
         ennemies = vampires
+        ENNEMY = VAMPIRE
     else:
         return [], []
 
@@ -29,6 +31,12 @@ def stupidNext(gameState):
                 gameState2 = deepcopy(gameState)
                 if (gameState2.map[user.x + i - 1][user.y + j - 1] == None ):
                     set_species_on_cell(gameState2,  user.x + i - 1, user.y + j - 1, gameState.team_specie, user.number)
+                    remove_specie_on_cell(gameState2, user.x, user.y)
+                    moves += [[[user.x, user.y, user.number, user.x + i - 1, user.y + j - 1]]]
+                    nexts += [gameState2]
+                elif (gameState2.map[user.x + i - 1][user.y + j - 1].species == ENNEMY and gameState2.map[user.x + i - 1][user.y + j - 1].number < user.number*1.5 ):
+                    remove_specie_on_cell(gameState2, user.x + i - 1, user.y + j - 1)
+                    set_species_on_cell(gameState2, user.x + i - 1, user.y + j - 1, gameState.team_specie, user.number)
                     remove_specie_on_cell(gameState2, user.x, user.y)
                     moves += [[[user.x, user.y, user.number, user.x + i - 1, user.y + j - 1]]]
                     nexts += [gameState2]

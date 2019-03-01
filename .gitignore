@@ -3,6 +3,7 @@
 # Edit at https://www.gitignore.io/?templates=macos,python,windows,pycharm,visualstudiocode
 
 .idea
+bin
 
 ### macOS ###
 # General

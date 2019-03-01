@@ -1,6 +1,6 @@
 from copy import deepcopy
 from .constants import HUMAN, WEREWOLF, VAMPIRE
-from .GameState import Entity, set_species_on_cell, remove_specie_on_cell, print_map
+from .GameState import Entity, set_species_on_cell, remove_specie_on_cell, print_map,Movement
 
 def stupidNext(gameState):
     # on split jamais, on a toujours seulement une seule case
@@ -32,20 +32,20 @@ def stupidNext(gameState):
                 if (gameState2.map[user.x + i - 1][user.y + j - 1] == None ):
                     set_species_on_cell(gameState2,  user.x + i - 1, user.y + j - 1, gameState.team_specie, user.number)
                     remove_specie_on_cell(gameState2, user.x, user.y)
-                    moves += [[[user.x, user.y, user.number, user.x + i - 1, user.y + j - 1]]]
+                    moves += [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]]
                     nexts += [gameState2]
-                elif (gameState2.map[user.x + i - 1][user.y + j - 1].species == ENNEMY and gameState2.map[user.x + i - 1][user.y + j - 1].number < user.number*1.5 ):
+                elif (gameState2.map[user.x + i - 1][user.y + j - 1].species == ENNEMY and gameState2.map[user.x + i - 1][user.y + j - 1].number*1.5 < user.number ):
                     remove_specie_on_cell(gameState2, user.x + i - 1, user.y + j - 1)
                     set_species_on_cell(gameState2, user.x + i - 1, user.y + j - 1, gameState.team_specie, user.number)
                     remove_specie_on_cell(gameState2, user.x, user.y)
-                    moves += [[[user.x, user.y, user.number, user.x + i - 1, user.y + j - 1]]]
+                    moves += [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]]
                     nexts += [gameState2]
                 elif (gameState2.map[user.x + i - 1][user.y + j - 1].species == HUMAN and gameState2.map[user.x + i - 1][user.y + j - 1].number < user.number ):
                     nb_humans = gameState2.map[user.x + i - 1][user.y + j - 1].number
                     remove_specie_on_cell(gameState2, user.x + i - 1, user.y + j - 1)
                     set_species_on_cell(gameState2, user.x + i - 1, user.y + j - 1, gameState.team_specie, user.number + nb_humans)
                     remove_specie_on_cell(gameState2, user.x, user.y)
-                    moves += [[[user.x, user.y, user.number, user.x + i - 1, user.y + j - 1]]]
+                    moves += [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]]
                     nexts += [gameState2]
     """
     print("nextsStupid ", len(nexts), "moves", len(moves))

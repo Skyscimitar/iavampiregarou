@@ -1,5 +1,5 @@
 import socket
-from time import sleep
+from time import sleep,time
 from game_state.GameState import *
 import sys
 
@@ -121,7 +121,10 @@ def play():
                 convert_tuple(game,change)
             print("game map after conversion")
             print_map(game)
+            start = time()
             moves = next_moves_decider(game)
+            end = time()
+            print("Done in {0} seconds".format( end - start))
             # reverse x et y
             #for i in range(len(moves)):
             #   moves[i] = [moves[i][1], moves[i][0], moves[i][2], moves[i][4], moves[i][3]]

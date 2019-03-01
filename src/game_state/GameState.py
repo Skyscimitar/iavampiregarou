@@ -168,8 +168,8 @@ def get_adjacent_cells(gameState, x, y):
 
 def get_next_moves(gameState, x, y, team_cell_population):
     adjacent_cells = get_adjacent_cells(gameState, x, y)
-    print(adjacent_cells)
-    print("adjacent cells", len(adjacent_cells))
+    #print(adjacent_cells)
+    #print("adjacent cells", len(adjacent_cells))
 
     movements = []
     for adj_x, adj_y in adjacent_cells:

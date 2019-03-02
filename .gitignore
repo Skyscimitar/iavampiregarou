@@ -4,6 +4,7 @@
 
 .idea
 bin
+pyvenv.cfg
 
 ### macOS ###
 # General

@@ -1,6 +1,6 @@
 from copy import deepcopy
 from .constants import HUMAN, WEREWOLF, VAMPIRE
-from .GameState import Entity, set_species_on_cell, remove_specie_on_cell, print_map
+from .GameState import Entity, set_species_on_cell, remove_specie_on_cell, print_map,Movement
 
 def stupidNext(gameState):
     # on split jamais, on a toujours seulement une seule case
@@ -13,13 +13,16 @@ def stupidNext(gameState):
     werewolves = gameState.werewolves
     humans = gameState.humans
 
-    if gameState.team_specie == VAMPIRE :
+    # Si pas de test sur la longueur, on plante si on tue tous les autres !
+    if gameState.team_specie == VAMPIRE and len(vampires) > 0:
         # and len(vampires) > 0
         user = vampires[0]
         ennemies = werewolves
+        ENNEMY = WEREWOLF
     elif len(werewolves) > 0:
         user = werewolves[0]
         ennemies = vampires
+        ENNEMY = VAMPIRE
     else:
         return [], []
 
@@ -30,14 +33,26 @@ def stupidNext(gameState):
                 if (gameState2.map[user.x + i - 1][user.y + j - 1] == None ):
                     set_species_on_cell(gameState2,  user.x + i - 1, user.y + j - 1, gameState.team_specie, user.number)
                     remove_specie_on_cell(gameState2, user.x, user.y)
-                    moves += [[[user.x, user.y, user.number, user.x + i - 1, user.y + j - 1]]]
+                    gameState2.team_specie = ENNEMY
+                    gameState2.remaining_moves -= 1
+                    moves += [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]]
                     nexts += [gameState2]
-                elif (gameState2.map[user.x + i - 1][user.y + j - 1].species == HUMAN and gameState2.map[user.x + i - 1][user.y + j - 1].number < user.number ):
+                elif (gameState2.map[user.x + i - 1][user.y + j - 1].species == ENNEMY and gameState2.map[user.x + i - 1][user.y + j - 1].number*1.5 < user.number ):
+                    remove_specie_on_cell(gameState2, user.x + i - 1, user.y + j - 1)
+                    set_species_on_cell(gameState2, user.x + i - 1, user.y + j - 1, gameState.team_specie, user.number)
+                    remove_specie_on_cell(gameState2, user.x, user.y)
+                    gameState2.team_specie = ENNEMY
+                    gameState2.remaining_moves -= 1
+                    moves += [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]]
+                    nexts += [gameState2]
+                elif (gameState2.map[user.x + i - 1][user.y + j - 1].species == HUMAN and gameState2.map[user.x + i - 1][user.y + j - 1].number <= user.number ):
                     nb_humans = gameState2.map[user.x + i - 1][user.y + j - 1].number
                     remove_specie_on_cell(gameState2, user.x + i - 1, user.y + j - 1)
                     set_species_on_cell(gameState2, user.x + i - 1, user.y + j - 1, gameState.team_specie, user.number + nb_humans)
                     remove_specie_on_cell(gameState2, user.x, user.y)
-                    moves += [[[user.x, user.y, user.number, user.x + i - 1, user.y + j - 1]]]
+                    gameState2.team_specie = ENNEMY
+                    gameState2.remaining_moves -= 1
+                    moves += [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]]
                     nexts += [gameState2]
     """
     print("nextsStupid ", len(nexts), "moves", len(moves))

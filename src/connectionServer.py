@@ -115,12 +115,12 @@ def play():
         elif cmd == u"UPD":
             upd = understand_upd_command(sock)
             print(upd)
-            print("game map before conversion")
-            print_map(game)
+            #print("game map before conversion")
+            #print_map(game)
             for change in upd :
                 convert_tuple(game,change)
-            print("game map after conversion")
-            print_map(game)
+            #print("game map after conversion")
+            #print_map(game)
             start = time()
             moves = next_moves_decider(game)
             end = time()

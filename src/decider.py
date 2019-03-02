@@ -8,9 +8,12 @@ take a game state and return the next moves
 """
 def next_moves_decider(game_state):
     def scoring(state):
-        return scoring_function(state, 3, -3, 1)
-        #return scoring_function_2(state, -1.2)
-    moves, bestScore = alphabeta(game_state, 5, scoring, get_next_states)
-    #moves, bestScore = alphabeta(game_state, 5, scoring, stupidNext)
-    print("next move decided with alpha beta score:" + str(bestScore) + "  move:" + str(moves))
+        #return scoring_function(state, game_state.team_specie, 20, -3, 1)
+        return scoring_function_2(state, game_state.team_specie, 20, -10)
+    print("Deciding move for specie " + str(game_state.team_specie))
+    #moves, bestScore = alphabeta(game_state, 5, scoring, get_next_states)
+    moves, bestScore = alphabeta(game_state, 4, scoring, stupidNext)
+    print("next move decided with alpha beta score:" + str(bestScore) + "  move:")
+    for m in moves:
+        print(m)
     return moves

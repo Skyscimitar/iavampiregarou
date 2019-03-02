@@ -16,6 +16,7 @@ class GameState:
         self.vampire_count = 0
         self.werewolf_count = 0
         self.human_count = 0
+        self.remaining_moves = 200
 
 
 def convert_tuple(gameState, tuple):
@@ -302,3 +303,7 @@ class Movement:
         self.target_y = target_y
         self.target_specie = target_specie
         self.target_count = target_count
+
+    def __str__(self):
+        return "Movement: [ s_x:" + str(self.source_x) + ", s_y:" + str(self.source_y) + ", nb_unit:" + \
+             str(self.units_moved_count) + ", t_x:" + str(self.target_x) + ", t_y:" + str(self.target_y) + "]"

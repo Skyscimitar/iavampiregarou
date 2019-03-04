@@ -113,6 +113,8 @@ def get_next_states(gameState):
         else:
             final_combinations.append(combo)
             next_states.append(generate_state_from_moves(gameState, combo, next_team_specie))
+    if final_combinations == []:
+        return [gameState], [[]]
     return next_states, final_combinations
 
 
@@ -205,7 +207,7 @@ def get_next_moves(gameState, x, y, team_cell_population):
                     else:
                         team_count = gameState.werewolf_count
                         enemy_count = gameState.vampire_count
-
+                    
                     if team_count + gameState.human_count < enemy_count:
                         # TODO: verifier la probabilite
                         probability = team_cell_population / adjacent_population - 0.5
@@ -216,8 +218,8 @@ def get_next_moves(gameState, x, y, team_cell_population):
                             probability = team_cell_population / adjacent_population - 0.5
                             movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0))] + movements
 
-                    movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
-
+                    #movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
+    
     return movements
 
 """

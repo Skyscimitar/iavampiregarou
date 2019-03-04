@@ -199,7 +199,29 @@ def get_next_moves(gameState, x, y, team_cell_population):
                 if team_cell_population >= 1.5 * adjacent_population:
                     movements.append(
                         Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population))
+                else:
+                    if gameState.team_specie == VAMPIRE:
+                        team_count = gameState.vampire_count
+                        enemy_count = gameState.werewolf_count
+                    else:
+                        team_count = gameState.werewolf_count
+                        enemy_count = gameState.vampire_count
 
+                    if team_count + gameState.human_count < enemy_count:
+                        # TODO: verifier la probabilite
+                        probability = team_cell_population / adjacent_population - 0.5
+                        movements.append(
+                            Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie,
+                                     round(probability * team_cell_population, 0)))
+                    elif team_cell_population >= adjacent_population:
+                        if team_count < enemy_count + gameState.human_count:
+                            probability = team_cell_population / adjacent_population - 0.5
+                            movements.append(
+                                Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0)))
+
+
+
+                    gameState.human_count + gameState.
     return movements
 
 """

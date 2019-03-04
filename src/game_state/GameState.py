@@ -194,11 +194,10 @@ def get_next_moves(gameState, x, y, team_cell_population):
             # Pour l'instant, on va la ou on est sur de gagner
             if adjacent_specie == HUMAN:
                 if team_cell_population >= adjacent_population:
-                    movements.append(Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population + adjacent_population))
+                    movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population + adjacent_population)] + movements
             else:
                 if team_cell_population >= 1.5 * adjacent_population:
-                    movements.append(
-                        Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population))
+                    movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
 
     return movements
 

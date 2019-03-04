@@ -43,7 +43,7 @@ def stupidNext(gameState):
                     remove_specie_on_cell(gameState2, user.x, user.y)
                     gameState2.team_specie = ENNEMY
                     gameState2.remaining_moves -= 1
-                    moves += [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]]
+                    moves = [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]] + moves
                     nexts += [gameState2]
                 elif (gameState2.map[user.x + i - 1][user.y + j - 1].species == HUMAN and gameState2.map[user.x + i - 1][user.y + j - 1].number <= user.number ):
                     nb_humans = gameState2.map[user.x + i - 1][user.y + j - 1].number
@@ -52,7 +52,7 @@ def stupidNext(gameState):
                     remove_specie_on_cell(gameState2, user.x, user.y)
                     gameState2.team_specie = ENNEMY
                     gameState2.remaining_moves -= 1
-                    moves += [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]]
+                    moves = [[Movement(user.x, user.y, user.number, user.x + i - 1, user.y + j - 1,None,None)]] + moves
                     nexts += [gameState2]
     """
     print("nextsStupid ", len(nexts), "moves", len(moves))

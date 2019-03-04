@@ -57,12 +57,13 @@ def scoring_function_2(gameState, player_to_maximize, alpha, beta):
     
     h_score = nearest_human_camp(humans, users, ennemies)
     k_score = kill_score(users, ennemies, 0.1)
+    bh_score = humans_barycentre(humans, users, 0.4)
     if player_to_maximize == VAMPIRE:
         return alpha*gameState.vampire_count + beta*gameState.werewolf_count + h_score \
-            + k_score
+            + k_score + bh_score
     else:
         return alpha*gameState.werewolf_count + beta*gameState.vampire_count + h_score \
-            + k_score
+            + k_score + bh_score
 
 
 def nearest_human_camp(humans, users, ennemies):
@@ -85,6 +86,15 @@ def nearest_human_camp(humans, users, ennemies):
             gamma = -0.5
             h_score += gamma*human.number/min_distance_possible_ennemy
     return h_score
+
+def humans_barycentre(humans, users, alpha):
+    bh_score = 0
+    for user in users:
+        for human in humans:
+            if user.number >= human.number:
+                if distance(user, human) > 0 :
+                    bh_score += float(human.number)/distance(user, human)
+    return alpha*bh_score
 
 def kill_score(users, ennemies, alpha):
     k_score = 0

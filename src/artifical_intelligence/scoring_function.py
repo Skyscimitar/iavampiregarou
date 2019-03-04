@@ -87,6 +87,12 @@ def nearest_human_camp(humans, users, ennemies):
             h_score += gamma*human.number/min_distance_possible_ennemy
     return h_score
 
+
+def next_avaialble_camps(user, human, humans, enemies):
+    proximity_score = 0
+    user.x, user.y = human.x, human.y
+
+
 def humans_barycentre(humans, users, alpha):
     bh_score = 0
     for user in users:

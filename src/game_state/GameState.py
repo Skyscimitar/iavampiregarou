@@ -100,7 +100,7 @@ def get_next_states(gameState):
             next_moves_group = [None]
             next_moves_group += get_next_moves(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number)
             next_moves.append(list(next_moves_group))
-        
+
         next_team_specie = VAMPIRE
 
     possibles_combinations = itertools.product(*next_moves)
@@ -113,6 +113,8 @@ def get_next_states(gameState):
         else:
             final_combinations.append(combo)
             next_states.append(generate_state_from_moves(gameState, combo, next_team_specie))
+    if final_combinations == []:
+        return [gameState], [[]]
     return next_states, final_combinations
 
 
@@ -198,12 +200,31 @@ def get_next_moves(gameState, x, y, team_cell_population):
             else:
                 if team_cell_population >= 1.5 * adjacent_population:
                     movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
+                else:
+                    if gameState.team_specie == VAMPIRE:
+                        team_count = gameState.vampire_count
+                        enemy_count = gameState.werewolf_count
+                    else:
+                        team_count = gameState.werewolf_count
+                        enemy_count = gameState.vampire_count
+                    
+                    if team_count + gameState.human_count < enemy_count:
+                        # TODO: verifier la probabilite
+                        probability = team_cell_population / adjacent_population - 0.5
+                        movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie,
+                                     round(probability * team_cell_population, 0))] + movements
+                    elif team_cell_population >= adjacent_population:
+                        if team_count < enemy_count + gameState.human_count:
+                            probability = team_cell_population / adjacent_population - 0.5
+                            movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0))] + movements
 
+                    #movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
+    
     return movements
 
 """
 Gives the result of a fight between a number attackers_count of attackers and a number defenders_count of defenders
-If random fight, the survivor count is the expected count of survivors 
+If random fight, the survivor count is the expected count of survivors
 
 input: attackers_count, defenders_count, defenders_specie: int
 output: [(victory, survivor_count, probability),...]: array of possible states as 3-tuples with

@@ -20,6 +20,8 @@ def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, al
         if player == "max":
             bestMove = None
             bestScore = -100000000000000
+            # if next_states == []:
+            #     return ([], bestScore)
             for i, next_state in enumerate(next_states):
                 next_best_state, score = alphabeta_gen(next_state, profondeur-1, scoring_function, "min", getNextStates, alpha, beta)
                 if score > bestScore:
@@ -32,6 +34,8 @@ def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, al
         elif player == "min":
             bestMove = None
             bestScore = 100000000000000
+            # if next_states == []:
+            #     return ([], bestScore)
             for i, next_state in enumerate(next_states):
                 next_best_state, score = alphabeta_gen(next_state, profondeur-1, scoring_function, "max", getNextStates, alpha, beta)
                 if score < bestScore:

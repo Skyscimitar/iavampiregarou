@@ -169,8 +169,46 @@ def get_adjacent_cells(gameState, x, y):
     return adjacent_cells
 
 
+"""
+Provides all direction of interest
+input: x,y: int
+output: adjacent_cells
+"""
+
+def sign_f(x):
+    if x > 0:
+        return 1
+    if x < 0:
+        return -1
+    return 0
+
+def get_cell_from_vector(x, y, v_x, v_y):
+    abs_v_x = abs(v_x)
+    abs_v_y = abs(v_y)
+    if abs_v_x == abs_v_y and abs_v_x != 0: 
+        return (x + sign_f(v_x), y + sign_f(v_y))
+    elif abs_v_x > abs_v_y:
+        return (x + sign_f(v_x), y)
+    else:
+        return (x, y + sign_f(v_y))
+
+def get_interesting_adjacent_cells(gameState, x, y):
+    interesting_adjacent_cells = []
+    if gameState.team_specie == VAMPIRE:
+        ennemies = gameState.werewolves
+    else:
+        ennemies = gameState.vampires
+    # si peu d'objet d'interet
+    if (len(gameState.humans) + len(ennemies) < 6):
+        return list(set([get_cell_from_vector(x, y, h.x - x, h.y -y) for h in gameState.humans+ennemies]))
+    # normal process with adjacent cells
+    else: 
+        return get_adjacent_cells(gameState, x, y)
+
+
 def get_next_moves(gameState, x, y, team_cell_population):
-    adjacent_cells = get_adjacent_cells(gameState, x, y)
+    #adjacent_cells = get_adjacent_cells(gameState, x, y)
+    adjacent_cells = get_interesting_adjacent_cells(gameState, x, y)
     #print(adjacent_cells)
     #print("adjacent cells", len(adjacent_cells))
 

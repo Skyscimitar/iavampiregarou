@@ -106,12 +106,10 @@ def get_next_states(gameState, split=False):
             next_moves_group += get_next_moves(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells)
             if split:
                 split_moves = handle_split(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells)
-                next_moves_group.append(split_moves)
+                next_moves_group += split_moves
             next_moves.append(list(next_moves_group))
 
         next_team_specie = VAMPIRE
-    
-    print("next_moves: ", np.asarray(next_moves).shape)
 
     possibles_combinations = itertools.product(*next_moves)
     final_combinations = []
@@ -205,16 +203,16 @@ def get_next_moves(gameState, x, y, team_cell_population, adjacent_cells):
             continue
         elif adjacent_population == 0:
             movements.append(
-                Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population))
+                [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)])
         else:
             # TODO: gerer les batailles aleatoires
             # Pour l'instant, on va la ou on est sur de gagner
             if adjacent_specie == HUMAN:
                 if team_cell_population >= adjacent_population:
-                    movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population + adjacent_population)] + movements
+                    movements = [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population + adjacent_population)]] + movements
             else:
                 if team_cell_population >= 1.5 * adjacent_population:
-                    movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
+                    movements = [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)]] + movements
                 else:
                     if gameState.team_specie == VAMPIRE:
                         team_count = gameState.vampire_count
@@ -226,12 +224,12 @@ def get_next_moves(gameState, x, y, team_cell_population, adjacent_cells):
                     if team_count + gameState.human_count < enemy_count:
                         # TODO: verifier la probabilite
                         probability = team_cell_population / adjacent_population - 0.5
-                        movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie,
-                                     round(probability * team_cell_population, 0))] + movements
+                        movements = [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie,
+                                     round(probability * team_cell_population, 0))]] + movements
                     elif team_cell_population >= adjacent_population:
                         if team_count < enemy_count + gameState.human_count:
                             probability = team_cell_population / adjacent_population - 0.5
-                            movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0))] + movements
+                            movements = [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0))]] + movements
 
                     #movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
     
@@ -338,10 +336,10 @@ def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_coun
     movements = itertools.product(*[movements_1, movements_2])
     final_movements = []
     for i, movement in enumerate(movements):
-        if check_movement_destinations(movement[0], movement[1]):
+        if check_movement_destinations(movement[0][0], movement[1][0]):
             continue
         else:
-            final_movements.append(list(movement))
+            final_movements.append([movement[0][0], movement[1][0]])
     return final_movements
     
 

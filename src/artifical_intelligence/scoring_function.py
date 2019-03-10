@@ -83,10 +83,10 @@ def nearest_human_camp(humans, users, ennemies):
                 min_distance_possible_user = distance(v, human)
 
         if min_distance_possible_user < min_distance_possible_ennemy:
-            gamma = 1.0
+            gamma = 10
             h_score += gamma*human.number/min_distance_possible_user
         else :
-            gamma = -0.5
+            gamma = -10
             h_score += gamma*human.number/min_distance_possible_ennemy
     
     return h_score

@@ -1,6 +1,7 @@
 from .constants import HUMAN, WEREWOLF, VAMPIRE, MIN_SPLIT
 from copy import deepcopy
 import itertools
+import numpy as np
 
 class GameState:
 
@@ -85,23 +86,32 @@ def get_species_and_inhabitant_on_cell(gameState, x, y):
 
 
 
-def get_next_states(gameState):
+def get_next_states(gameState, split=False):
     next_moves = []
     if gameState.team_specie == VAMPIRE:
         for vampire_group in gameState.vampires:
+            adjacent_cells = get_adjacent_cells(gameState, vampire_group.x, vampire_group.y)
             next_moves_group = [None]
-            next_moves_group += get_next_moves(gameState, vampire_group.x, vampire_group.y, vampire_group.number)
+            next_moves_group += get_next_moves(gameState, vampire_group.x, vampire_group.y, vampire_group.number, adjacent_cells)
+            if split:
+                next_moves_group += handle_split(gameState, vampire_group.x, vampire_group.y, vampire_group.number, adjacent_cells)
             next_moves.append(list(next_moves_group))
 
         next_team_specie = WEREWOLF
 
     else:
         for werewolf_group in gameState.werewolves:
+            adjacent_cells = get_adjacent_cells(gameState, werewolf_group.x, werewolf_group.y)
             next_moves_group = [None]
-            next_moves_group += get_next_moves(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number)
+            next_moves_group += get_next_moves(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells)
+            if split:
+                split_moves = handle_split(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells)
+                next_moves_group.append(split_moves)
             next_moves.append(list(next_moves_group))
 
         next_team_specie = VAMPIRE
+    
+    print("next_moves: ", np.asarray(next_moves).shape)
 
     possibles_combinations = itertools.product(*next_moves)
     final_combinations = []
@@ -111,8 +121,16 @@ def get_next_states(gameState):
         if i == 0:
             continue
         else:
-            final_combinations.append(combo)
-            next_states.append(generate_state_from_moves(gameState, combo, next_team_specie))
+            final_combos = []
+            for movements in combo:
+                if isinstance(movements, list):
+                    for move in movements:
+                        final_combos.append(move)
+                else:
+                    final_combos += [movements]
+
+            final_combinations.append(final_combos)
+            next_states.append(generate_state_from_moves(gameState, final_combos, next_team_specie))
     if final_combinations == []:
         return [gameState], [[]]
     return next_states, final_combinations
@@ -121,7 +139,6 @@ def get_next_states(gameState):
 def generate_state_from_moves(gameState, combo, next_team_specie):
     newState = deepcopy(gameState)
     newState.team_specie = next_team_specie
-
     for move in combo:
         if move is not None:
             remove_specie_on_cell(newState, move.target_x, move.target_y)
@@ -169,8 +186,7 @@ def get_adjacent_cells(gameState, x, y):
     return adjacent_cells
 
 
-def get_next_moves(gameState, x, y, team_cell_population):
-    adjacent_cells = get_adjacent_cells(gameState, x, y)
+def get_next_moves(gameState, x, y, team_cell_population, adjacent_cells):
     #print(adjacent_cells)
     #print("adjacent cells", len(adjacent_cells))
 
@@ -185,10 +201,9 @@ def get_next_moves(gameState, x, y, team_cell_population):
 
         # listing the different scenarios
         if adjacent_specie == gameState.team_specie:
-            # TODO: gerer split et merge
+            # TODO: handle merge
             continue
         elif adjacent_population == 0:
-            # TODO: gerer split et merge
             movements.append(
                 Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population))
         else:
@@ -313,6 +328,33 @@ class MapEntity:
         return "n:" +str(self.number) + " s:" + str(self.species)
 
 
+def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_count=4):
+    if team_cell_population < 2*min_count:
+        return []
+    population_1 = min_count
+    population_2 = team_cell_population - min_count
+    movements_1 = get_next_moves(gameState, x, y , population_1, adjacent_cells)
+    movements_2 = get_next_moves(gameState, x, y, population_2, adjacent_cells)
+    movements = itertools.product(*[movements_1, movements_2])
+    final_movements = []
+    for i, movement in enumerate(movements):
+        if check_movement_destinations(movement[0], movement[1]):
+            continue
+        else:
+            final_movements.append(list(movement))
+    return final_movements
+    
+
+
+    
+
+        
+
+
+    
+
+
+
 class Movement:
 
     def __init__(self, source_x, source_y, units_moved_count, target_x, target_y, target_specie, target_count):
@@ -327,3 +369,9 @@ class Movement:
     def __str__(self):
         return "Movement: [ s_x:" + str(self.source_x) + ", s_y:" + str(self.source_y) + ", nb_unit:" + \
              str(self.units_moved_count) + ", t_x:" + str(self.target_x) + ", t_y:" + str(self.target_y) + "]"
+
+
+def check_movement_destinations(movement_1, movement_2):
+    if movement_1.target_x == movement_2.target_x and movement_1.target_y == movement_2.target_y:
+        return True
+    return False

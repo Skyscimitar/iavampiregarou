@@ -74,11 +74,12 @@ def send_mov_command(sock, movements):
     paquet += 'MOV'.encode()
     paquet += bytes([len(movements)])
     for movement in movements:
-        paquet += bytes([movement.source_x])
-        paquet += bytes([movement.source_y])
-        paquet += bytes([movement.units_moved_count])
-        paquet += bytes([movement.target_x])
-        paquet += bytes([movement.target_y])
+        if movement is not None:
+            paquet += bytes([movement.source_x])
+            paquet += bytes([movement.source_y])
+            paquet += bytes([movement.units_moved_count])
+            paquet += bytes([movement.target_x])
+            paquet += bytes([movement.target_y])
     sock.send(paquet)
 
 

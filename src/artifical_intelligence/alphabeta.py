@@ -14,7 +14,7 @@ def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, al
     if profondeur == 0:
         return (state, scoring_function(state))
     else:
-        next_states, moves = getNextStates(state)
+        next_states, moves = getNextStates(state, True)
         #print("moves ", len(state.vampires), len(moves), moves, len(next_states))
         #print()
         if player == "max":

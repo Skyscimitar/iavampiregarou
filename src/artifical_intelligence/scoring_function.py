@@ -7,8 +7,8 @@ from game_state.constants import HUMAN, WEREWOLF, VAMPIRE
 Scoring_function, calculate the score of an instance of the game state
 input: 
     gameState - an instance of the game state
-    alpha: weight given to the vampire population
-    beta: weight given to the werewolf population
+    alpha: weight given to our team
+    beta: weight given to the opponent's team
     gamma: weight given to human camps
 output: 
     score: int - the score the game state has using the provided heuristic function.
@@ -41,7 +41,7 @@ def distance(entity_1, entity_2):
     return max(np.abs(entity_1.x - entity_2.x), np.abs(entity_1.y - entity_2.y))
     
 
-def scoring_function_2(gameState, player_to_maximize, alpha, beta):
+def scoring_function_2(gameState, player_to_maximize, alpha, beta, gamma):
     # vampires = gameState.vampires
     # werewolves = gameState.werewolves
     humans = gameState.humans
@@ -50,29 +50,29 @@ def scoring_function_2(gameState, player_to_maximize, alpha, beta):
 
     if player_to_maximize == VAMPIRE:
         users = gameState.vampires
+        users_count = gameState.vampire_count
         ennemies = gameState.werewolves
+        ennemies_count = gameState.werewolf_count
     else:
         users = gameState.werewolves
+        users_count = gameState.werewolf_count
         ennemies = gameState.vampires
-    
+        ennemies_count = gameState.vampire_count
+
     h_score = nearest_human_camp(humans, users, ennemies)
     k_score = kill_score(users, ennemies, 0.1)
     bh_score = humans_barycentre(humans, users, 0.4)
     end_score = kill_end_game(gameState.human_count, users, ennemies, 200)
     #end_score = 0
-    if player_to_maximize == VAMPIRE:
-        return alpha*gameState.vampire_count + beta*gameState.werewolf_count + h_score \
-            + k_score + bh_score + end_score
-    else:
-        return alpha*gameState.werewolf_count + beta*gameState.vampire_count + h_score \
-            + k_score + bh_score + end_score
+
+    return alpha*users_count + beta*ennemies_count + h_score + k_score + bh_score + end_score
 
 
 def nearest_human_camp(humans, users, ennemies):
     h_score = 0
     for human in humans:
+
         min_distance_possible_user = 1000
-        
         for u in users:
             if distance(u, human) < min_distance_possible_user and u.number >= human.number:
                 min_distance_possible_user = distance(u, human)
@@ -81,12 +81,14 @@ def nearest_human_camp(humans, users, ennemies):
         for v in ennemies:
             if distance(v, human) < min_distance_possible_user and v.number >= human.number:
                 min_distance_possible_user = distance(v, human)
+
         if min_distance_possible_user < min_distance_possible_ennemy:
             gamma = 1.0
             h_score += gamma*human.number/min_distance_possible_user
         else :
             gamma = -0.5
             h_score += gamma*human.number/min_distance_possible_ennemy
+    
     return h_score
 
 def humans_barycentre(humans, users, alpha):

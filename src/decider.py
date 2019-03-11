@@ -11,6 +11,9 @@ def next_moves_decider(game_state):
     def scoring(state):
         #return scoring_function(state, game_state.team_specie, 20, -3, 1)
         return scoring_function_2(state, game_state.team_specie, 20, -20, 1)
+
+    def next_states_split(state):
+        return get_next_states(state, True)
     
     print("Deciding move for specie " + str(game_state.team_specie))
     if game_state.team_specie == VAMPIRE:
@@ -18,11 +21,19 @@ def next_moves_decider(game_state):
     else:
         ennemies = game_state.vampires
     
-    profondeur = 4
-    if len(game_state.humans) + len(ennemies) < 6:
+    is_split_good = True
+    if is_split_good:
+        profondeur = 1
+        next_state_function = next_states_split
+    elif len(game_state.humans) + len(ennemies) < 6:
         profondeur = 8
+        next_state_function = get_next_states
+    else:
+        next_state_function = get_next_states
+        profondeur = 4
+    
 
-    moves, bestScore = alphabeta(game_state, profondeur, scoring, get_next_states)
+    moves, bestScore = alphabeta(game_state, profondeur, scoring, next_state_function)
     print("next move decided with alpha beta score:" + str(bestScore) + "  move:")
     for m in moves:
         print(m)

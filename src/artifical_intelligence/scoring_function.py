@@ -59,7 +59,7 @@ def scoring_function_2(gameState, player_to_maximize, alpha, beta, gamma):
         ennemies = gameState.vampires
         ennemies_count = gameState.vampire_count
 
-    h_score = nearest_human_camp(humans, users, ennemies)
+    h_score = nearest_human_camp(humans, users, ennemies, gamma)
     k_score = kill_score(users, ennemies, 0.1)
     bh_score = humans_barycentre(humans, users, 0.4)
     end_score = kill_end_game(gameState.human_count, users, ennemies, 200)
@@ -68,7 +68,7 @@ def scoring_function_2(gameState, player_to_maximize, alpha, beta, gamma):
     return alpha*users_count + beta*ennemies_count + h_score + k_score + bh_score + end_score
 
 
-def nearest_human_camp(humans, users, ennemies):
+def nearest_human_camp(humans, users, ennemies, gamma):
     h_score = 0
     for human in humans:
 
@@ -83,11 +83,11 @@ def nearest_human_camp(humans, users, ennemies):
                 min_distance_possible_user = distance(v, human)
 
         if min_distance_possible_user < min_distance_possible_ennemy:
-            gamma = 10
+            # gamma = 10
             h_score += gamma*human.number/min_distance_possible_user
         else :
-            gamma = -10
-            h_score += gamma*human.number/min_distance_possible_ennemy
+            # gamma = -10
+            h_score += -gamma*human.number/min_distance_possible_ennemy
     
     return h_score
 

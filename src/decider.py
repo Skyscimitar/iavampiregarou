@@ -21,10 +21,10 @@ def next_moves_decider(game_state):
     mode = get_game_mode(game_state)
     
     if mode == SPLIT_MODE:
-        profondeur = 1
+        profondeur = 2
         next_state_function = next_states_split
     elif mode == SIMPLE_GAME:
-        profondeur = 8
+        profondeur = 5
         next_state_function = get_next_states
     else: # mode == NO_SPLIT_GAME
         next_state_function = get_next_states

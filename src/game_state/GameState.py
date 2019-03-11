@@ -140,8 +140,12 @@ def generate_state_from_moves(gameState, combo, next_team_specie):
     newState.team_specie = next_team_specie
     for move in combo:
         if move is not None:
-            remove_specie_on_cell(newState, move.target_x, move.target_y)
-            set_species_on_cell(newState, move.target_x, move.target_y, move.target_specie, move.target_count)
+            target_cell = get_species_and_inhabitant_on_cell(gameState, move.target_x, move.target_y)
+            if target_cell is not None and target_cell.species == gameState.team_specie:
+                set_species_on_cell(newState, move.target_x, move.target_y, move.target_specie, target_cell.number + move.target_count)
+            else:
+                remove_specie_on_cell(newState, move.target_x, move.target_y)
+                set_species_on_cell(newState, move.target_x, move.target_y, move.target_specie, move.target_count)
             remove_specie_on_cell(newState, move.source_x, move.source_y)
     return newState
 

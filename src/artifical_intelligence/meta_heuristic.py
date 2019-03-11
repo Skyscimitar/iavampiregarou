@@ -1,3 +1,6 @@
+import sys
+sys.path.append('..')
+from game_state.constants import HUMAN, WEREWOLF, VAMPIRE
 
 SPLIT_MODE = 0
 SIMPLE_GAME = 1

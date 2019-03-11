@@ -1,0 +1,1 @@
+gcc -o test constants.c GameState.c next.c

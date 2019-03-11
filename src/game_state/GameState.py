@@ -1,4 +1,4 @@
-from .constants import HUMAN, WEREWOLF, VAMPIRE, MIN_SPLIT
+from .constants import HUMAN, WEREWOLF, VAMPIRE, MIN_SPLIT, MAX_GROUPES
 from copy import deepcopy
 import itertools
 import numpy as np
@@ -86,14 +86,14 @@ def get_species_and_inhabitant_on_cell(gameState, x, y):
 
 
 
-def get_next_states(gameState, split=False):
+def get_next_states(gameState, split=False, max_groupes=MAX_GROUPES):
     next_moves = []
     if gameState.team_specie == VAMPIRE:
         for vampire_group in gameState.vampires:
             adjacent_cells = get_interesting_adjacent_cells(gameState, vampire_group.x, vampire_group.y)
             next_moves_group = [None]
             next_moves_group += get_next_moves(gameState, vampire_group.x, vampire_group.y, vampire_group.number, adjacent_cells)
-            if split:
+            if split and len(gameState.vampires) < max_groupes:
                 split_moves = handle_split(gameState, vampire_group.x, vampire_group.y, vampire_group.number, adjacent_cells)
                 next_moves_group += split_moves
             next_moves.append(list(next_moves_group))
@@ -105,7 +105,7 @@ def get_next_states(gameState, split=False):
             adjacent_cells = get_interesting_adjacent_cells(gameState, werewolf_group.x, werewolf_group.y)
             next_moves_group = [None]
             next_moves_group += get_next_moves(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells)
-            if split:
+            if split and len(gameState.werewolves) < max_groupes:
                 split_moves = handle_split(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells)
                 next_moves_group += split_moves
             next_moves.append(list(next_moves_group))

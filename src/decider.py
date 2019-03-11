@@ -18,14 +18,16 @@ def next_moves_decider(game_state):
     print("Deciding move for specie " + str(game_state.team_specie))
     if game_state.team_specie == VAMPIRE:
         ennemies = game_state.werewolves
+        users = game_state.vampires
     else:
         ennemies = game_state.vampires
+        users = game_state.werewolves
     
     is_split_good = True
     if is_split_good:
         profondeur = 1
         next_state_function = next_states_split
-    elif len(game_state.humans) + len(ennemies) < 6:
+    elif len(game_state.humans) + len(ennemies) < 6 and len(users) == 1:
         profondeur = 8
         next_state_function = get_next_states
     else:

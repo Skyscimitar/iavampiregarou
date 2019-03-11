@@ -2,7 +2,6 @@ from artifical_intelligence.alphabeta import alphabeta
 from game_state.GameState import get_next_states
 from game_state.next import stupidNext
 from artifical_intelligence.scoring_function import scoring_function, scoring_function_2
-from artifical_intelligence.meta_heuristic import *
 from game_state.constants import HUMAN, WEREWOLF, VAMPIRE, MIN_SPLIT
 
 
@@ -47,6 +46,9 @@ def next_moves_decider(game_state):
 
     if mode == SPLIT_MODE:
         profondeur = 2
+        if len(game_state.humans) == 0:
+            profondeur = 1
+        
         moves, bestScore = alphabeta(game_state, profondeur, scoring, next_states_split)
     elif mode == SIMPLE_GAME:
         profondeur = 8

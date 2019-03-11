@@ -216,10 +216,12 @@ def get_interesting_adjacent_cells(gameState, x, y):
     interesting_adjacent_cells = []
     if gameState.team_specie == VAMPIRE:
         ennemies = gameState.werewolves
+        users = gameState.vampires
     else:
         ennemies = gameState.vampires
+        users = gameState.werewolves
     # si peu d'objet d'interet
-    if (len(gameState.humans) + len(ennemies) < 6):
+    if (len(gameState.humans) + len(ennemies) < 6 and len(users) == 1 ):
         return list(set([get_cell_from_vector(x, y, h.x - x, h.y -y) for h in gameState.humans+ennemies]))
     # normal process with adjacent cells
     else: 
@@ -386,7 +388,15 @@ def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_coun
     
 
 
-    
+def get_stupid_valid_move(gameState):
+    if gameState.team_specie == VAMPIRE:
+        entity = gameState.vampires[0]
+        adj_x, adj_y = get_adjacent_cells(gameState, entity.x, entity.y)[0]
+        return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
+    else:
+        entity = gameState.werewolves[0]
+        adj_x, adj_y = get_adjacent_cells(gameState, entity.x, entity.y)[0]
+        return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
 
         
 

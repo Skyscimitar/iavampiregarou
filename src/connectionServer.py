@@ -2,6 +2,8 @@ import socket
 from time import sleep,time
 from game_state.GameState import *
 import sys
+import threading
+import g_var
 
 from decider import next_moves_decider
 
@@ -115,7 +117,7 @@ def play():
                         game.team_specie = WEREWOLF
         elif cmd == u"UPD":
             upd = understand_upd_command(sock)
-            print(upd)
+            print("upd", upd)
             #print("game map before conversion")
             #print_map(game)
             for change in upd :
@@ -123,7 +125,24 @@ def play():
             #print("game map after conversion")
             #print_map(game)
             start = time()
-            moves = next_moves_decider(game)
+            g_var.moves_computed = None
+            result_available = threading.Event()
+
+            def background_move_decision(current_game_state):
+                g_var.moves_computed = next_moves_decider(current_game_state)
+                # g_var.moves_computed = m
+                print("mouvements computed in thread", g_var.moves_computed)
+                result_available.set()
+            
+            thread = threading.Thread(target=background_move_decision, args=(game, ))
+            thread.start()
+            result_available.wait(timeout=1.85)
+            
+            #moves = next_moves_decider(game)
+            moves = g_var.moves_computed
+            if moves == []:
+                moves = get_stupid_valid_move(game)
+            #print('printing global val', moves, g_var.moves_computed)
             end = time()
             print("Done in {0} seconds".format( end - start))
             # reverse x et y

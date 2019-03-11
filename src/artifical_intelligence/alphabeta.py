@@ -2,6 +2,7 @@ import sys
 sys.path.append('..')
 from game_state.constants import HUMAN, WEREWOLF, VAMPIRE
 from game_state.GameState import print_map
+import g_var
 
 """
 Returns list of changes to make using alphabeta version of the minimax algorithm
@@ -9,7 +10,7 @@ input: game_state: GameState, depth: int, scoring_function: (game_state: GameSta
 output: [(xi:int, yi:int, nb_individus:int, xo:int, yo:int)]
 """
 
-def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, alpha, beta):
+def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, alpha, beta, profondeur_initiale):
     # on est sur une feuille
     if profondeur == 0:
         return (state, scoring_function(state))
@@ -23,11 +24,14 @@ def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, al
             # if next_states == []:
             #     return ([], bestScore)
             for i, next_state in enumerate(next_states):
-                next_best_state, score = alphabeta_gen(next_state, profondeur-1, scoring_function, "min", getNextStates, alpha, beta)
+                next_best_state, score = alphabeta_gen(next_state, profondeur-1, scoring_function, "min", getNextStates, alpha, beta, profondeur_initiale)
                 if score > bestScore:
                     alpha = max(alpha, score)
                     bestScore = score
                     bestMove = moves[i]
+                    if profondeur_initiale == profondeur and g_var.moves_computed != []:
+                        # print("assigning partial top var", bestMove)
+                        g_var.moves_computed = bestMove
                 if alpha >= beta:
                     return (bestMove, bestScore)
             return (bestMove, bestScore)
@@ -37,11 +41,14 @@ def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, al
             # if next_states == []:
             #     return ([], bestScore)
             for i, next_state in enumerate(next_states):
-                next_best_state, score = alphabeta_gen(next_state, profondeur-1, scoring_function, "max", getNextStates, alpha, beta)
+                next_best_state, score = alphabeta_gen(next_state, profondeur-1, scoring_function, "max", getNextStates, alpha, beta, profondeur_initiale)
                 if score < bestScore:
                     beta = min(beta, score)
                     bestScore = score
                     bestMove = moves[i]
+                    if profondeur_initiale == profondeur and g_var.moves_computed != []:
+                        # print("assigning partial top var", bestMove)
+                        g_var.moves_computed = bestMove
                 if alpha >= beta:
                     return (bestMove, bestScore)
             return (bestMove, bestScore)
@@ -49,4 +56,4 @@ def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, al
 def alphabeta(state, profondeur, scoring_function, getNextStates):
     #print("Starting alpha beta with map")
     #print_map(state)
-    return alphabeta_gen(state, profondeur, scoring_function, "max", getNextStates, -10000, 10000)
+    return alphabeta_gen(state, profondeur, scoring_function, "max", getNextStates, -10000, 10000, profondeur)

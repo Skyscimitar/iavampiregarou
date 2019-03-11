@@ -47,6 +47,6 @@ def alphabeta_gen(state, profondeur, scoring_function, player, getNextStates, al
             return (bestMove, bestScore)
 
 def alphabeta(state, profondeur, scoring_function, getNextStates):
-    print("Starting alpha beta with map")
-    print_map(state)
+    #print("Starting alpha beta with map")
+    #print_map(state)
     return alphabeta_gen(state, profondeur, scoring_function, "max", getNextStates, -10000, 10000)

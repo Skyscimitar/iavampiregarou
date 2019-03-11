@@ -281,7 +281,6 @@ def get_next_moves(gameState, x, y, team_cell_population, adjacent_cells):
 """
 Gives the result of a fight between a number attackers_count of attackers and a number defenders_count of defenders
 If random fight, the survivor count is the expected count of survivors
-
 input: attackers_count, defenders_count, defenders_specie: int
 output: [(victory, survivor_count, probability),...]: array of possible states as 3-tuples with
     - victory: boolean (True if attackers won)

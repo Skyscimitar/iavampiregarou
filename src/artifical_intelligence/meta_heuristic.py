@@ -15,9 +15,10 @@ def get_game_mode(game_state):
         users_count = game_state.werewolf_count
     
     is_split_good = True
-    if is_split_good:
-        return SPLIT_MODE
+
     if len(game_state.humans) + len(ennemies) < 6 and users_count == 1:
         return SIMPLE_GAME
+    if is_split_good:
+        return SPLIT_MODE
     else:
         return NO_SPLIT_GAME

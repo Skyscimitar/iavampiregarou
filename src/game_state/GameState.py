@@ -375,6 +375,7 @@ def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_coun
         return []
     population_1 = min_count
     population_2 = team_cell_population - min_count
+    # TODO optimise, don't generate all adjacent cell ? 
     movements_1 = get_next_moves(gameState, x, y , population_1, adjacent_cells)
     movements_2 = get_next_moves(gameState, x, y, population_2, adjacent_cells)
     movements = itertools.product(*[movements_1, movements_2])

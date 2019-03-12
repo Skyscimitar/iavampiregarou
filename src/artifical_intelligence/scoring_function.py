@@ -41,7 +41,7 @@ def distance(entity_1, entity_2):
     return max(np.abs(entity_1.x - entity_2.x), np.abs(entity_1.y - entity_2.y))
     
 
-def scoring_function_2(gameState, player_to_maximize, alpha, beta, gamma):
+def scoring_function_2(gameState, player_to_maximize, alpha, beta, alpha_bar, alpha_h):
     # vampires = gameState.vampires
     # werewolves = gameState.werewolves
     humans = gameState.humans
@@ -63,7 +63,7 @@ def scoring_function_2(gameState, player_to_maximize, alpha, beta, gamma):
     # h_score = 0
     k_score = kill_score(users, ennemies, 0.1)
     # bh_score = humans_barycentre(humans, users, 0.4)
-    h_bh_score = optimised_near_human_barycentre(users, ennemies, humans, 0.4, gamma)
+    h_bh_score = optimised_near_human_barycentre(users, ennemies, humans, alpha_bar, alpha_h)
     end_score = kill_end_game(gameState.human_count, users, ennemies, 200)
     split_score = number_groups_scores(users, len(humans), 2000)
     #split_score = 0 

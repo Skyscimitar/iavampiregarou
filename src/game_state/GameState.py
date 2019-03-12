@@ -1,5 +1,5 @@
 from .constants import HUMAN, WEREWOLF, VAMPIRE, MIN_SPLIT, MAX_GROUPES
-from copy import deepcopy
+from copy import deepcopy, copy
 import itertools
 import numpy as np
 
@@ -19,6 +19,18 @@ class GameState:
         self.human_count = 0
         self.remaining_moves = 200
 
+
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result = copy(self)
+        result.humans = copy(self.humans)
+        result.map = copy(self.map)
+        result.werewolves = copy(self.werewolves)
+        result.vampires = copy(self.vampires)
+        for i in range(len(result.map)):
+            result.map[i] = copy(self.map[i])
+        return result
 
 def convert_tuple(gameState, tuple):
     x, y, humans, vampires, werewolves = tuple
@@ -221,7 +233,7 @@ def get_interesting_adjacent_cells(gameState, x, y):
         ennemies = gameState.vampires
         users = gameState.werewolves
     # si peu d'objet d'interet
-    if (len(gameState.humans) + len(ennemies) < 6 and len(users) == 1 ):
+    if (len(gameState.humans) + len(ennemies) <= 6 and len(users) == 1 ):
         return list(set([get_cell_from_vector(x, y, h.x - x, h.y -y) for h in gameState.humans+ennemies]))
     # normal process with adjacent cells
     else: 
@@ -370,12 +382,11 @@ class MapEntity:
         return "n:" +str(self.number) + " s:" + str(self.species)
 
 
-def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_count=4):
+def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_count=10):
     if team_cell_population < 2*min_count:
         return []
     population_1 = min_count
     population_2 = team_cell_population - min_count
-    # TODO optimise, don't generate all adjacent cell ? 
     movements_1 = get_next_moves(gameState, x, y , population_1, adjacent_cells)
     movements_2 = get_next_moves(gameState, x, y, population_2, adjacent_cells)
     movements = itertools.product(*[movements_1, movements_2])

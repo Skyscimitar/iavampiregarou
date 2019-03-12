@@ -16,10 +16,10 @@ def next_states_split(state):
         return get_next_states(state, True)
     
 
-def next_moves_decider(game_state):
+def next_moves_decider(game_state, event_stop):
     def scoring(state):
         #return scoring_function(state, game_state.team_specie, 20, -3, 1)
-        return scoring_function_2(state, game_state.team_specie, 20, -20, 10)
+        return scoring_function_2(state, game_state.team_specie, 20, -30, 8, 3)
 
     
     print("Deciding move for specie " + str(game_state.team_specie))
@@ -28,14 +28,14 @@ def next_moves_decider(game_state):
     #### META HEURISTIC
     if game_state.team_specie == VAMPIRE:
         ennemies = game_state.werewolves
-        users_count = game_state.vampire_count
+        users = game_state.vampires
     else:
         ennemies = game_state.vampires
-        users_count = game_state.werewolf_count
+        users = game_state.werewolves
     
     is_split_good = True
 
-    if len(game_state.humans) + len(ennemies) < 6 and users_count == 1:
+    if len(game_state.humans) + len(ennemies) <= 6 and len(users) == 1:
         mode = SIMPLE_GAME
     if is_split_good:
         mode = SPLIT_MODE
@@ -45,17 +45,17 @@ def next_moves_decider(game_state):
 
 
     if mode == SPLIT_MODE:
-        profondeur = 2
-        if len(game_state.humans) == 0:
+        profondeur = 3
+        if len(game_state.humans) <= 1:
             profondeur = 1
         
-        moves, bestScore = alphabeta(game_state, profondeur, scoring, next_states_split)
+        moves, bestScore = alphabeta(game_state, profondeur, scoring, next_states_split, event_stop)
     elif mode == SIMPLE_GAME:
         profondeur = 8
-        moves, bestScore = alphabeta(game_state, profondeur, scoring, get_next_states)
+        moves, bestScore = alphabeta(game_state, profondeur, scoring, get_next_states, event_stop)
     else: # mode == NO_SPLIT_GAME
         profondeur = 4
-        moves, bestScore = alphabeta(game_state, profondeur, scoring, get_next_states)
+        moves, bestScore = alphabeta(game_state, profondeur, scoring, get_next_states, event_stop)
     
     print("next move decided with alpha beta score:" + str(bestScore) + "  move:")
     for m in moves:

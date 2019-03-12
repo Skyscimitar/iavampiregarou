@@ -127,20 +127,26 @@ def play():
             start = time()
             g_var.moves_computed = None
             result_available = threading.Event()
+            event_stop = threading.Event()
 
             def background_move_decision(current_game_state):
-                g_var.moves_computed = next_moves_decider(current_game_state)
-                # g_var.moves_computed = m
-                print("mouvements computed in thread", g_var.moves_computed)
-                result_available.set()
+                if not event_stop.is_set():
+                    g_var.moves_computed = next_moves_decider(current_game_state, event_stop)
+                    # g_var.moves_computed = m
+                    print("mouvements computed in thread", g_var.moves_computed)
+                    result_available.set()
+                else:
+                    print("event has been set, not modifying global var")
             
             thread = threading.Thread(target=background_move_decision, args=(game, ))
             thread.start()
-            result_available.wait(timeout=1.85)
+            result_available.wait(timeout=1.84)
+            event_stop.set()
             
             #moves = next_moves_decider(game)
             moves = g_var.moves_computed
             if moves == []:
+                print("taking stupid valid move to stay alive")
                 moves = get_stupid_valid_move(game)
             #print('printing global val', moves, g_var.moves_computed)
             end = time()

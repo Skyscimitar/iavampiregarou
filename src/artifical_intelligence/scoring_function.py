@@ -65,7 +65,7 @@ def scoring_function_2(gameState, player_to_maximize, alpha, beta, alpha_bar, al
     # bh_score = humans_barycentre(humans, users, 0.4)
     h_bh_score = optimised_near_human_barycentre(users, ennemies, humans, alpha_bar, alpha_h)
     end_score = kill_end_game(gameState.human_count, users, ennemies, 200)
-    split_score = number_groups_scores(users, len(humans), 2000)
+    split_score = number_groups_scores(users, len(humans), 30)
     #split_score = 0 
     #end_score = 0
 
@@ -124,9 +124,9 @@ def kill_end_game(human_count, users, ennemies, alpha):
 
 def number_groups_scores(users, nb_human_camp, param):
     if len(users) == 1 or nb_human_camp > 1:
-        return 0
-    else:
         return -param*len(users)
+    else:
+        return -param*param*param*len(users)
 
         # total_distance = 0
         # for i in range(len(users)):

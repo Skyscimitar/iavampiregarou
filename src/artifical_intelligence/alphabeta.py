@@ -10,6 +10,9 @@ input: game_state: GameState, depth: int, scoring_function: (game_state: GameSta
 output: [(xi:int, yi:int, nb_individus:int, xo:int, yo:int)]
 """
 
+def sort_game_func(game, scoring_func):
+    return scoring_func(game)
+
 def alphabeta_gen(state, event_stop, profondeur, scoring_function, player, getNextStates, alpha, beta, profondeur_initiale):
     # on est sur une feuille
     if profondeur == 0:
@@ -21,8 +24,13 @@ def alphabeta_gen(state, event_stop, profondeur, scoring_function, player, getNe
         if player == "max":
             bestMove = None
             bestScore = -100000000000000
-            # if next_states == []:
-            #     return ([], bestScore)
+            # guiding search
+            if profondeur_initiale == profondeur:
+                couplage = [(next_states[i], moves[i]) for i in range(len(moves))]
+                couplage_sorted = sorted(couplage, key = lambda x: sort_game_func(x[0], scoring_function), reverse=True)
+                next_states = [x[0] for x in couplage_sorted]
+                moves = [x[1] for x in couplage_sorted]
+
             for i, next_state in enumerate(next_states):
                 next_best_state, score = alphabeta_gen(next_state, event_stop, profondeur-1, scoring_function, "min", getNextStates, alpha, beta, profondeur_initiale)
                 if event_stop.is_set():
@@ -41,8 +49,7 @@ def alphabeta_gen(state, event_stop, profondeur, scoring_function, player, getNe
         elif player == "min":
             bestMove = None
             bestScore = 100000000000000
-            # if next_states == []:
-            #     return ([], bestScore)
+
             for i, next_state in enumerate(next_states):
                 next_best_state, score = alphabeta_gen(next_state, event_stop, profondeur-1, scoring_function, "max", getNextStates, alpha, beta, profondeur_initiale)
                 if score < bestScore:

@@ -18,6 +18,7 @@ class GameState:
         self.werewolf_count = 0
         self.human_count = 0
         self.remaining_moves = 200
+        self.min_human_in_camp = float('inf')
 
 
     def __deepcopy__(self, memo):
@@ -54,6 +55,8 @@ def set_species_on_cell(gameState, x, y, species, number):
     if species == HUMAN:
         gameState.humans.append(entity)
         gameState.human_count += entity.number
+        if gameState.min_human_in_camp > entity.number:
+            gameState.min_human_in_camp = entity.number
     elif species == VAMPIRE:
         gameState.vampires.append(entity)
         gameState.vampire_count += entity.number
@@ -98,7 +101,7 @@ def get_species_and_inhabitant_on_cell(gameState, x, y):
 
 
 
-def get_next_states(gameState, split=False, max_groupes=MAX_GROUPES):
+def get_next_states(gameState, split=False, min_count_split = 10, max_groupes=MAX_GROUPES):
     next_moves = []
     if gameState.team_specie == VAMPIRE:
         for vampire_group in gameState.vampires:
@@ -106,7 +109,7 @@ def get_next_states(gameState, split=False, max_groupes=MAX_GROUPES):
             next_moves_group = [None]
             next_moves_group += get_next_moves(gameState, vampire_group.x, vampire_group.y, vampire_group.number, adjacent_cells)
             if split and len(gameState.vampires) < max_groupes:
-                split_moves = handle_split(gameState, vampire_group.x, vampire_group.y, vampire_group.number, adjacent_cells)
+                split_moves = handle_split(gameState, vampire_group.x, vampire_group.y, vampire_group.number, adjacent_cells, min_count_split)
                 next_moves_group += split_moves
             next_moves.append(list(next_moves_group))
 
@@ -118,7 +121,7 @@ def get_next_states(gameState, split=False, max_groupes=MAX_GROUPES):
             next_moves_group = [None]
             next_moves_group += get_next_moves(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells)
             if split and len(gameState.werewolves) < max_groupes:
-                split_moves = handle_split(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells)
+                split_moves = handle_split(gameState, werewolf_group.x, werewolf_group.y, werewolf_group.number, adjacent_cells, min_count_split)
                 next_moves_group += split_moves
             next_moves.append(list(next_moves_group))
 
@@ -266,10 +269,10 @@ def get_next_moves(gameState, x, y, team_cell_population, adjacent_cells):
             # Pour l'instant, on va la ou on est sur de gagner
             if adjacent_specie == HUMAN:
                 if team_cell_population >= adjacent_population:
-                    movements = [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population + adjacent_population)]] + movements
+                    movements += [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population + adjacent_population)]]
             else:
                 if team_cell_population >= 1.5 * adjacent_population:
-                    movements = [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)]] + movements
+                    movements += [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)]]
                 else:
                     if gameState.team_specie == VAMPIRE:
                         team_count = gameState.vampire_count
@@ -281,12 +284,12 @@ def get_next_moves(gameState, x, y, team_cell_population, adjacent_cells):
                     if team_count + gameState.human_count < enemy_count:
                         # TODO: verifier la probabilite
                         probability = team_cell_population / adjacent_population - 0.5
-                        movements = [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie,
-                                     round(probability * team_cell_population, 0))]] + movements
+                        movements += [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie,
+                                     round(probability * team_cell_population, 0))]] 
                     elif team_cell_population >= adjacent_population:
                         if team_count < enemy_count + gameState.human_count:
                             probability = team_cell_population / adjacent_population - 0.5
-                            movements = [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0))]] + movements
+                            movements += [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0))]] 
 
                     #movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
     
@@ -382,7 +385,7 @@ class MapEntity:
         return "n:" +str(self.number) + " s:" + str(self.species)
 
 
-def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_count=10):
+def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_count):
     if team_cell_population < 2*min_count:
         return []
     population_1 = min_count

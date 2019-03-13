@@ -94,7 +94,7 @@ def play():
     sock.connect((sys.argv[1], int(sys.argv[2])))
     print('Connecte')
     send_nme_command(sock, 'helene')
-
+    nb_timeout = 0
 
     while True :
         cmd = getcommand(sock)
@@ -131,7 +131,7 @@ def play():
 
             def background_move_decision(current_game_state):
                 if not event_stop.is_set():
-                    g_var.moves_computed = next_moves_decider(current_game_state, event_stop)
+                    g_var.moves_computed = next_moves_decider(current_game_state, event_stop, nb_timeout)
                     # g_var.moves_computed = m
                     print("mouvements computed in thread", g_var.moves_computed)
                     result_available.set()
@@ -145,8 +145,9 @@ def play():
             
             #moves = next_moves_decider(game)
             moves = g_var.moves_computed
-            if moves == []:
+            if moves == [] or moves == None:
                 print("taking stupid valid move to stay alive")
+                nb_timeout += 1
                 moves = get_stupid_valid_move(game)
             #print('printing global val', moves, g_var.moves_computed)
             end = time()

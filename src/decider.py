@@ -12,11 +12,13 @@ NO_SPLIT_GAME = 2
 take a game state and return the next moves
 
 """
-def next_states_split(state):
-        return get_next_states(state, True)
+def get_next_states_split_func(game):
+    def next_states_split(state):
+        return get_next_states(state, True, min_count_split=game.min_human_in_camp*2+1)
+    return next_states_split
     
 
-def next_moves_decider(game_state, event_stop):
+def next_moves_decider(game_state, event_stop, nb_timeout):
     def scoring(state):
         #return scoring_function(state, game_state.team_specie, 20, -3, 1)
         return scoring_function_2(state, game_state.team_specie, 20, -30, 8, 3)
@@ -47,14 +49,14 @@ def next_moves_decider(game_state, event_stop):
     if mode == SPLIT_MODE:
         profondeur = 3
         if len(game_state.humans) <= 1:
-            profondeur = 1
+            profondeur = 2
         
-        moves, bestScore = alphabeta(game_state, profondeur, scoring, next_states_split, event_stop)
+        moves, bestScore = alphabeta(game_state, profondeur, scoring, get_next_states_split_func(game_state), event_stop)
     elif mode == SIMPLE_GAME:
         profondeur = 8
         moves, bestScore = alphabeta(game_state, profondeur, scoring, get_next_states, event_stop)
     else: # mode == NO_SPLIT_GAME
-        profondeur = 4
+        profondeur = max(2, 6 - nb_timeout)
         moves, bestScore = alphabeta(game_state, profondeur, scoring, get_next_states, event_stop)
     
     print("next move decided with alpha beta score:" + str(bestScore) + "  move:")

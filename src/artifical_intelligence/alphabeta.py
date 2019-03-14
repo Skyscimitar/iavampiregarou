@@ -23,7 +23,7 @@ def alphabeta_gen(state, event_stop, profondeur, scoring_function, player, getNe
         #print()
         if player == "max":
             bestMove = None
-            bestScore = -100000000000000
+            bestScore = -1000000000000000000000
             # guiding search
             if profondeur_initiale == profondeur:
                 couplage = [(next_states[i], moves[i]) for i in range(len(moves))]
@@ -48,7 +48,7 @@ def alphabeta_gen(state, event_stop, profondeur, scoring_function, player, getNe
             return (bestMove, bestScore)
         elif player == "min":
             bestMove = None
-            bestScore = 100000000000000
+            bestScore = 100000000000000000000
 
             for i, next_state in enumerate(next_states):
                 next_best_state, score = alphabeta_gen(next_state, event_stop, profondeur-1, scoring_function, "max", getNextStates, alpha, beta, profondeur_initiale)

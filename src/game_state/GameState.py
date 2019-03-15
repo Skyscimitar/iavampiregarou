@@ -414,6 +414,43 @@ def get_stupid_valid_move(gameState):
         return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
 
         
+def get_not_so_stupid_valid_move(gameState):
+    if gameState.team_specie == VAMPIRE:
+        entity = gameState.vampires[0]
+        team_cell_population = entity.number
+        for cell in get_adjacent_cells(gameState, entity.x, entity.y):
+            adj_x, adj_y = cell
+            adjacent_cell = get_species_and_inhabitant_on_cell(gameState, adj_x, adj_y)
+            if adjacent_cell is not None:
+                adjacent_specie, adjacent_population = adjacent_cell.species, adjacent_cell.number
+            else:
+                adjacent_specie, adjacent_population = None, 0
+            if adjacent_specie == HUMAN:
+                if team_cell_population >= adjacent_population:
+                    return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
+            elif adjacent_specie == WEREWOLF:
+                if team_cell_population >= 1.5 * adjacent_population:
+                    return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
+            else:
+                return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
+    else:
+        entity = gameState.werewolves[0]
+        team_cell_population = entity.number
+        for cell in get_adjacent_cells(gameState, entity.x, entity.y):
+            adj_x, adj_y = cell
+            adjacent_cell = get_species_and_inhabitant_on_cell(gameState, adj_x, adj_y)
+            if adjacent_cell is not None:
+                adjacent_specie, adjacent_population = adjacent_cell.species, adjacent_cell.number
+            else:
+                adjacent_specie, adjacent_population = None, 0
+            if adjacent_specie == HUMAN:
+                if team_cell_population >= adjacent_population:
+                    return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
+            elif adjacent_specie == VAMPIRE:
+                if team_cell_population >= 1.5 * adjacent_population:
+                    return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
+            else:
+                return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
 
 
     

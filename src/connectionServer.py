@@ -148,7 +148,8 @@ def play():
             if moves == [] or moves == None:
                 print("taking stupid valid move to stay alive")
                 deept_ajusted += 1
-                moves = get_stupid_valid_move(game)
+                #moves = get_stupid_valid_move(game)
+                moves = get_not_so_stupid_valid_move(game)
             #print('printing global val', moves, g_var.moves_computed)
             end = time()
             if end - start < 0.15:

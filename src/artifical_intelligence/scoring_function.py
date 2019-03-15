@@ -41,7 +41,7 @@ def distance(entity_1, entity_2):
     return max(np.abs(entity_1.x - entity_2.x), np.abs(entity_1.y - entity_2.y))
     
 
-def scoring_function_2(gameState, player_to_maximize, alpha, beta, gamma):
+def scoring_function_2(gameState, player_to_maximize, alpha, beta, alpha_bar, alpha_h):
     # vampires = gameState.vampires
     # werewolves = gameState.werewolves
     humans = gameState.humans
@@ -59,16 +59,20 @@ def scoring_function_2(gameState, player_to_maximize, alpha, beta, gamma):
         ennemies = gameState.vampires
         ennemies_count = gameState.vampire_count
 
-    h_score = nearest_human_camp(humans, users, ennemies)
+    # h_score = nearest_human_camp(humans, users, ennemies, gamma)
+    # h_score = 0
     k_score = kill_score(users, ennemies, 0.1)
-    bh_score = humans_barycentre(humans, users, 0.4)
+    # bh_score = humans_barycentre(humans, users, 0.4)
+    h_bh_score = optimised_near_human_barycentre(users, ennemies, humans, alpha_bar, alpha_h)
     end_score = kill_end_game(gameState.human_count, users, ennemies, 200)
+    split_score = number_groups_scores(users, len(humans), 30)
+    #split_score = 0 
     #end_score = 0
 
-    return alpha*users_count + beta*ennemies_count + h_score + k_score + bh_score + end_score
+    return alpha*users_count + beta*ennemies_count + k_score + h_bh_score + end_score + split_score
 
 
-def nearest_human_camp(humans, users, ennemies):
+def nearest_human_camp(humans, users, ennemies, gamma):
     h_score = 0
     for human in humans:
 
@@ -83,11 +87,11 @@ def nearest_human_camp(humans, users, ennemies):
                 min_distance_possible_user = distance(v, human)
 
         if min_distance_possible_user < min_distance_possible_ennemy:
-            gamma = 1.0
+            # gamma = 10
             h_score += gamma*human.number/min_distance_possible_user
         else :
-            gamma = -0.5
-            h_score += gamma*human.number/min_distance_possible_ennemy
+            # gamma = -10
+            h_score += -gamma*human.number/min_distance_possible_ennemy
     
     return h_score
 
@@ -117,3 +121,43 @@ def kill_end_game(human_count, users, ennemies, alpha):
             return float(alpha)/distance(users[0], ennemies[0])
     return 0
 
+
+def number_groups_scores(users, nb_human_camp, param):
+    if len(users) == 1 or nb_human_camp > 1:
+        return -param*len(users)
+    else:
+        return -param*param*param*len(users)
+
+        # total_distance = 0
+        # for i in range(len(users)):
+        #     for j in range(i, len(users)):
+        #         total_distance += distance(users[i], users[j])
+        # return -param*(len(users) + total_distance)
+
+def optimised_near_human_barycentre(users, ennemies, humans, alpha_bar, alpha_h):
+    h_score = 0
+    bh_score = 0
+    for human in humans:
+
+        min_distance_possible_user = 1000
+        for u in users:
+            if u.number >= human.number:
+                dist_u_h = distance(u, human)
+                if dist_u_h > 0 :
+                    bh_score += float(human.number)/dist_u_h
+                if dist_u_h < min_distance_possible_user:
+                    min_distance_possible_user = dist_u_h
+        
+        min_distance_possible_ennemy = 1000
+        for v in ennemies:
+            if distance(v, human) < min_distance_possible_user and v.number >= human.number:
+                min_distance_possible_user = distance(v, human)
+
+        if min_distance_possible_user < min_distance_possible_ennemy:
+            # gamma = 10
+            h_score += alpha_h*human.number/min_distance_possible_user
+        else :
+            # gamma = -10
+            h_score += -alpha_h*human.number/min_distance_possible_ennemy
+    
+    return h_score + alpha_bar*bh_score

@@ -1,1 +1,1 @@
-from .constants import HUMAN, VAMPIRE, WEREWOLF
+from .constants import HUMAN, VAMPIRE, WEREWOLF, MAX_GROUPES

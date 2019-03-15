@@ -2,6 +2,8 @@ import socket
 from time import sleep,time
 from game_state.GameState import *
 import sys
+import threading
+import g_var
 
 from decider import next_moves_decider
 
@@ -72,6 +74,7 @@ def send_nme_command(sock, name):
 def send_mov_command(sock, movements):
     paquet = bytes()
     paquet += 'MOV'.encode()
+    movements = [movement for movement in movements if movement is not None]
     paquet += bytes([len(movements)])
     for movement in movements:
         paquet += bytes([movement.source_x])
@@ -91,7 +94,7 @@ def play():
     sock.connect((sys.argv[1], int(sys.argv[2])))
     print('Connecte')
     send_nme_command(sock, 'helene')
-
+    deept_ajusted = 0
 
     while True :
         cmd = getcommand(sock)
@@ -114,7 +117,7 @@ def play():
                         game.team_specie = WEREWOLF
         elif cmd == u"UPD":
             upd = understand_upd_command(sock)
-            print(upd)
+            print("upd", upd)
             #print("game map before conversion")
             #print_map(game)
             for change in upd :
@@ -122,8 +125,36 @@ def play():
             #print("game map after conversion")
             #print_map(game)
             start = time()
-            moves = next_moves_decider(game)
+            g_var.moves_computed = None
+            result_available = threading.Event()
+            event_stop = threading.Event()
+
+            def background_move_decision(current_game_state):
+                if not event_stop.is_set():
+                    g_var.moves_computed = next_moves_decider(current_game_state, event_stop, deept_ajusted)
+                    # g_var.moves_computed = m
+                    print("mouvements computed in thread", g_var.moves_computed)
+                    result_available.set()
+                else:
+                    print("event has been set, not modifying global var")
+            
+            thread = threading.Thread(target=background_move_decision, args=(game, ))
+            thread.start()
+            result_available.wait(timeout=1.84)
+            event_stop.set()
+            
+            #moves = next_moves_decider(game)
+            moves = g_var.moves_computed
+            if moves == [] or moves == None:
+                print("taking stupid valid move to stay alive")
+                deept_ajusted += 1
+                #moves = get_stupid_valid_move(game)
+                moves = get_not_so_stupid_valid_move(game)
+            #print('printing global val', moves, g_var.moves_computed)
             end = time()
+            if end - start < 0.15:
+                print("Quick computation, increasing deept")
+                deept_ajusted -= 1
             print("Done in {0} seconds".format( end - start))
             # reverse x et y
             #for i in range(len(moves)):

@@ -11,6 +11,13 @@ source ./venv/bin/activate
 deactivate
 
 ```
+## Installation
+
+Install dependencies using pip (preferably in a virtual environment):
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Project structure
 *  connectionServer.py : Connect to server. Receive and send commands

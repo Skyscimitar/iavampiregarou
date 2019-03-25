@@ -37,9 +37,9 @@ pip install -r requirements.txt
 ### 1. Connection to Server
 Launch connectionServer.py using the invite de commande [tmtc] with the structure 
 ```bash
-Python connectionServer.py 123.123.3.5 6666 		(123.123.3.5 being the host IP and 6666 being the port to connect)
+Python connectionServer.py 123.123.3.5 6666
 ```
-
+(123.123.3.5 being the host IP and 6666 being the port to connect)
 ### 2. Initialize Game State
 Thanks to the information received from Server via connectionServer.py a GameState is created using GameState.py
 

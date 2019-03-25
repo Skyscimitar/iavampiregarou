@@ -28,4 +28,19 @@ deactivate
 ## Steps
 
 ### 1. Connection to Server
+Launch connectionServer.py using the invite de commande [tmtc] with the structure 
+Python connectionServer.py 123.123.3.5 6666 		(123.123.3.5 being the host IP and 6666 being the port to connect)
+
+
+### 2. Initialize Game State
+Thanks to the information received from Server via connectionServer.py a GameState is created using GameState.py
+
+### 3. Calculate all next move possible
+
+
+### 4. Score all the next move
+
+### 5. Send the move with the highest score
+
+
 

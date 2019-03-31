@@ -20,7 +20,7 @@ class GameState:
         self.remaining_moves = 200
         self.min_human_in_camp = float('inf')
 
-
+    # deepcopy a ete reimplementee ici pour gagner en temps de calcul
     def __deepcopy__(self, memo):
         cls = self.__class__
         result = cls.__new__(cls)
@@ -220,7 +220,7 @@ def sign_f(x):
 def get_cell_from_vector(x, y, v_x, v_y):
     abs_v_x = abs(v_x)
     abs_v_y = abs(v_y)
-    if abs_v_x == abs_v_y and abs_v_x != 0: 
+    if abs_v_x == abs_v_y and abs_v_x != 0:
         return (x + sign_f(v_x), y + sign_f(v_y))
     elif abs_v_x > abs_v_y:
         return (x + sign_f(v_x), y)
@@ -239,7 +239,7 @@ def get_interesting_adjacent_cells(gameState, x, y):
     if (len(gameState.humans) + len(ennemies) <= 6 and len(users) == 1 ):
         return list(set([get_cell_from_vector(x, y, h.x - x, h.y -y) for h in gameState.humans+ennemies]))
     # normal process with adjacent cells
-    else: 
+    else:
         return get_adjacent_cells(gameState, x, y)
 
 
@@ -280,19 +280,19 @@ def get_next_moves(gameState, x, y, team_cell_population, adjacent_cells):
                     else:
                         team_count = gameState.werewolf_count
                         enemy_count = gameState.vampire_count
-                    
+
                     if team_count + gameState.human_count < enemy_count:
                         # TODO: verifier la probabilite
                         probability = team_cell_population / adjacent_population - 0.5
                         movements += [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie,
-                                     round(probability * team_cell_population, 0))]] 
+                                     round(probability * team_cell_population, 0))]]
                     elif team_cell_population >= adjacent_population:
                         if team_count < enemy_count + gameState.human_count:
                             probability = team_cell_population / adjacent_population - 0.5
-                            movements += [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0))]] 
+                            movements += [[Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, round(probability * team_cell_population, 0))]]
 
                     #movements = [Movement(x, y, team_cell_population, adj_x, adj_y, gameState.team_specie, team_cell_population)] + movements
-    
+
     return movements
 
 """
@@ -400,7 +400,7 @@ def handle_split(gameState, x, y, team_cell_population, adjacent_cells, min_coun
         else:
             final_movements.append([movement[0][0], movement[1][0]])
     return final_movements
-    
+
 
 
 def get_stupid_valid_move(gameState):
@@ -413,7 +413,7 @@ def get_stupid_valid_move(gameState):
         adj_x, adj_y = get_adjacent_cells(gameState, entity.x, entity.y)[0]
         return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
 
-        
+
 def get_not_so_stupid_valid_move(gameState):
     if gameState.team_specie == VAMPIRE:
         entity = gameState.vampires[0]
@@ -453,7 +453,7 @@ def get_not_so_stupid_valid_move(gameState):
                 return [Movement(entity.x, entity.y, entity.number, adj_x, adj_y, None, None)]
 
 
-    
+
 
 
 
